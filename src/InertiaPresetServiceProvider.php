@@ -29,6 +29,9 @@ class InertiaPresetServiceProvider extends ServiceProvider
 
         UiCommand::macro('inertia', function ($command) {
             InertiaPreset::install();
+
+            $command->info('Inertia scaffolding installed successfully.');
+            $command->comment('Run "npm install && npm run dev" to compile your assets.');
         });
     }
 }
