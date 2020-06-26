@@ -1,0 +1,12 @@
+{
+    "name": "titanium/inertia-vue",
+    "description": "Laravel preset for Inertia and Vue",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bjorn Lindholm",
+            "email": "bjornlindholmhansen@gmail.com"
+        }
+    ],
+    "require": {}
+}
