@@ -20,7 +20,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Titanium\\Inertia\\InertiaPresetServiceProvider"
+                "Titanium\\InertiaPreset\\InertiaPresetServiceProvider"
             ]
         }
     }
