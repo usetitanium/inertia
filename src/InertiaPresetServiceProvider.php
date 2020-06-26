@@ -12,6 +12,18 @@ class InertiaPresetServiceProvider extends ServiceProvider
 {
     public function boot()
     {
+        $this->registerMacros();
+
+        UiCommand::macro('inertia', function ($command) {
+            InertiaPreset::install();
+
+            $command->info('Inertia scaffolding installed successfully.');
+            $command->comment('Run "npm install && npm run dev" to compile your assets.');
+        });
+    }
+
+    private function registerMacros()
+    {
         Filesystem::macro('insertAfter', function ($file, $place, $insertion) {
             tap(new Filesystem, function ($filesystem) use ($file, $place, $insertion) {
                 $contents = $filesystem->get($file);
@@ -27,11 +39,15 @@ class InertiaPresetServiceProvider extends ServiceProvider
             });
         });
 
-        UiCommand::macro('inertia', function ($command) {
-            InertiaPreset::install();
+        Filesystem::macro('replaceSnippet', function ($file, $existing , $new) {
+            tap(new Filesystem, function ($filesystem) use ($file, $existing, $new) {
+                $contents = $filesystem->get($file);
 
-            $command->info('Inertia scaffolding installed successfully.');
-            $command->comment('Run "npm install && npm run dev" to compile your assets.');
+                $filesystem->put(
+                    $file, 
+                    Str::replaceFirst($existing, $new, $contents)
+                );
+            });
         });
     }
 }

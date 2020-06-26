@@ -13,6 +13,7 @@ class InertiaPreset extends Preset
         static::updatePackages();
         static::updatePackages(false);
         static::updateGitIgnore();
+        static::updateStyles();
     }
 
     protected static function updatePackageArray(array $packages, $key)
@@ -33,6 +34,25 @@ class InertiaPreset extends Preset
                 return $file . PHP_EOL;
             })->join(''),
         );
+    }
+
+    protected static function updateStyles()
+    {
+        tap(new Filesystem, function ($filesystem) {
+            $filesystem->replaceSnippet(
+                'webpack.mix.js', 
+                "sass('resources/sass/app.scss', 'public/css')",
+                ".copy('resources/css/app.css', 'public/css')",
+            );
+
+            $filesystem->deleteDirectory('resources/sass');
+
+            if (!$filesystem->exists('resources/css')) {
+                $filesystem->makeDirectory('resources/css');
+            }
+
+            $filesystem->put('resources/css/app.css', '');
+        });
     }
 
     protected static function updateDevDependenciesArray($packages)
