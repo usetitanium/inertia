@@ -4,6 +4,7 @@ namespace Titanium\InertiaPreset;
 
 use Laravel\Ui\UiCommand;
 use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
 use Titanium\InertiaPreset\InertiaPreset;
@@ -24,10 +25,18 @@ class InertiaPresetServiceProvider extends ServiceProvider
 
     private function registerMacros()
     {
-        Str::macro('indent', function ($content, $spaces = 4) {
-            return collect(explode(PHP_EOL, $content))->map(function ($string) use ($spaces) {
-                return collect(array_fill(0, $spaces, ' '))->join('') . $string;
-            })->join(PHP_EOL);
+        Stringable::macro('get', function () {
+            return $this->value;
+        });
+
+        Stringable::macro('indent', function ($spaces = 4) {
+            $this->value = collect(Str::of($this->value)->explode(PHP_EOL))
+                ->map(function ($string) use ($spaces) {
+                    return collect(array_fill(0, $spaces, ' '))->join('') . $string;
+                })
+                ->join(PHP_EOL);
+
+            return $this;
         });
 
         Filesystem::macro('insertAfter', function ($file, $place, $insertion) {

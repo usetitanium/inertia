@@ -32,9 +32,9 @@ class InertiaPreset extends Preset
     {
         (new Filesystem)->insertAfter(
             base_path('.gitignore'),
-            '/public/storage' . PHP_EOL,
+            Str::of('/public/storage')->finish(PHP_EOL),
             collect(['/public/*.js', '/public/*.css', '/public/mix-manifest.json'])->map(function ($file) {
-                return $file . PHP_EOL;
+                return Str::of($file)->finish(PHP_EOL)->get();
             })->join(''),
         );
     }
@@ -44,8 +44,8 @@ class InertiaPreset extends Preset
         tap(new Filesystem, function ($filesystem) {
             $filesystem->replaceSnippet(
                 base_path('webpack.mix.js'),
-                "sass('resources/sass/app.scss', 'public/css')",
-                "copy('resources/css/app.css', 'public/css')",
+                $filesystem->get(static::getStubPath('webpack/sass.stub')),
+                $filesystem->get(static::getStubPath('webpack/css.stub'))
             );
 
             $filesystem->deleteDirectory(resource_path('sass'));
@@ -64,7 +64,9 @@ class InertiaPreset extends Preset
             $filesystem->insertAfter(
                base_path('webpack.mix.js'),
                 ".copy('resources/css/app.css', 'public/css')",
-                PHP_EOL . Str::indent($filesystem->get(__DIR__ . '/stubs/webpack/alias.stub'))
+                Str::of($filesystem->get(static::getStubPath('webpack/alias.stub')))
+                    ->start(PHP_EOL)
+                    ->indent()
             );
         });
     }
@@ -86,6 +88,11 @@ class InertiaPreset extends Preset
             '@inertiajs/inertia' => '^0.1.9',
             '@inertiajs/inertia-vue' => '^0.1.4',
         ];
+    }
+
+    protected static function getStubPath($path)
+    {
+        return __DIR__ . '/stubs/' . $path;
     }
 
 }
