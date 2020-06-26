@@ -2,6 +2,7 @@
 
 namespace Titanium\InertiaPreset;
 
+use Illuminate\Support\Str;
 use Laravel\Ui\Presets\Preset;
 use Illuminate\Filesystem\Filesystem;
 
@@ -10,10 +11,12 @@ class InertiaPreset extends Preset
 
     public static function install()
     {
+        static::removeNodeModules();
         static::updatePackages();
         static::updatePackages(false);
         static::updateGitIgnore();
         static::updateStyles();
+        static::addWebpackAlias();
     }
 
     protected static function updatePackageArray(array $packages, $key)
@@ -42,7 +45,7 @@ class InertiaPreset extends Preset
             $filesystem->replaceSnippet(
                 'webpack.mix.js', 
                 "sass('resources/sass/app.scss', 'public/css')",
-                ".copy('resources/css/app.css', 'public/css')",
+                "copy('resources/css/app.css', 'public/css')",
             );
 
             $filesystem->deleteDirectory('resources/sass');
@@ -52,6 +55,17 @@ class InertiaPreset extends Preset
             }
 
             $filesystem->put('resources/css/app.css', '');
+        });
+    }
+
+    protected static function addWebpackAlias()
+    {
+        tap(new Filesystem, function ($filesystem) {
+            $filesystem->insertAfter(
+                'webpack.mix.js',
+                ".copy('resources/css/app.css', 'public/css')",
+                PHP_EOL . Str::indent($filesystem->get(__DIR__ . '/stubs/webpack/alias.stub'))
+            );
         });
     }
 

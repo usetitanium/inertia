@@ -24,6 +24,12 @@ class InertiaPresetServiceProvider extends ServiceProvider
 
     private function registerMacros()
     {
+        Str::macro('indent', function ($content, $spaces = 4) {
+            return collect(explode(PHP_EOL, $content))->map(function ($string) use ($spaces) {
+                return collect(array_fill(0, $spaces, ' '))->join('') . $string;
+            })->join(PHP_EOL);
+        });
+
         Filesystem::macro('insertAfter', function ($file, $place, $insertion) {
             tap(new Filesystem, function ($filesystem) use ($file, $place, $insertion) {
                 $contents = $filesystem->get($file);
