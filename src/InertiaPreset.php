@@ -31,7 +31,7 @@ class InertiaPreset extends Preset
     protected static function updateGitIgnore()
     {
         (new Filesystem)->insertAfter(
-            '.gitignore', 
+            base_path('.gitignore'),
             '/public/storage' . PHP_EOL,
             collect(['/public/*.js', '/public/*.css', '/public/mix-manifest.json'])->map(function ($file) {
                 return $file . PHP_EOL;
@@ -43,18 +43,18 @@ class InertiaPreset extends Preset
     {
         tap(new Filesystem, function ($filesystem) {
             $filesystem->replaceSnippet(
-                'webpack.mix.js', 
+                base_path('webpack.mix.js'),
                 "sass('resources/sass/app.scss', 'public/css')",
                 "copy('resources/css/app.css', 'public/css')",
             );
 
-            $filesystem->deleteDirectory('resources/sass');
+            $filesystem->deleteDirectory(resource_path('sass'));
 
-            if (!$filesystem->exists('resources/css')) {
-                $filesystem->makeDirectory('resources/css');
+            if (!$filesystem->exists(resource_path('css'))) {
+                $filesystem->makeDirectory(resource_path('css'));
             }
 
-            $filesystem->put('resources/css/app.css', '');
+            $filesystem->put(resource_path('css/app.css'), '');
         });
     }
 
@@ -62,7 +62,7 @@ class InertiaPreset extends Preset
     {
         tap(new Filesystem, function ($filesystem) {
             $filesystem->insertAfter(
-                'webpack.mix.js',
+               base_path('webpack.mix.js'),
                 ".copy('resources/css/app.css', 'public/css')",
                 PHP_EOL . Str::indent($filesystem->get(__DIR__ . '/stubs/webpack/alias.stub'))
             );
