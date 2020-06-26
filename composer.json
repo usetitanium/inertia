@@ -1,6 +1,6 @@
 {
-    "name": "titanium/inertia-vue",
-    "description": "Laravel preset for Inertia and Vue",
+    "name": "titanium/inertia",
+    "description": "Laravel preset for Inertia",
     "license": "MIT",
     "authors": [
         {
@@ -11,13 +11,13 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "Titanium\\InertiaVuePreset\\": "src/"
+            "Titanium\\InertiaPreset\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Titanium\\InertiaVue\\InertiaVuePresetServiceProvider"
+                "Titanium\\Inertia\\InertiaPresetServiceProvider"
             ],
         }
     }
