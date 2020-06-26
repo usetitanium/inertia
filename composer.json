@@ -8,5 +8,17 @@
             "email": "bjornlindholmhansen@gmail.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Titanium\\InertiaVuePreset\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Titanium\\InertiaVue\\InertiaVuePresetServiceProvider"
+            ],
+        }
+    }
 }
