@@ -19,6 +19,7 @@ class InertiaPreset extends Preset
         static::updateGitIgnore();
         static::updateStyles();
         static::addWebpackAlias();
+        static::updateViews();
     }
 
     protected static function updateComposerDependcies()
@@ -83,6 +84,17 @@ class InertiaPreset extends Preset
                 Str::of($filesystem->get(static::getStubPath('webpack/alias.stub')))
                     ->start(PHP_EOL)
                     ->indent()
+            );
+        });
+    }
+
+    protected static function updateViews()
+    {
+        tap(new Filesystem, function ($filesystem) {
+            $filesystem->cleanDirectory(resource_path('views'));
+            $filesystem->put(
+                resource_path('views/app.blade.php'),
+                $filesystem->get(static::getStubPath('views/app.blade.php.stub'))
             );
         });
     }
