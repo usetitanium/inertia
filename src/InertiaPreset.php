@@ -2,6 +2,7 @@
 
 namespace Titanium\InertiaPreset;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Laravel\Ui\Presets\Preset;
 use Illuminate\Filesystem\Filesystem;
@@ -14,9 +15,24 @@ class InertiaPreset extends Preset
         static::removeNodeModules();
         static::updatePackages();
         static::updatePackages(false);
+        static::updateComposerDependcies();
         static::updateGitIgnore();
         static::updateStyles();
         static::addWebpackAlias();
+    }
+
+    protected static function updateComposerDependcies()
+    {
+        static::updateComposer('require', function ($packages) {
+            return array_merge(
+                $packages,
+                [
+                    'inertiajs/inertia-laravel' => '^0.2.5',
+                    'tightenco/ziggy' => '^0.9.4',
+                    'laravel/ui' => '^2.0',
+                ]
+            );
+        });
     }
 
     protected static function updatePackageArray(array $packages, $key)
@@ -88,6 +104,25 @@ class InertiaPreset extends Preset
             '@inertiajs/inertia' => '^0.1.9',
             '@inertiajs/inertia-vue' => '^0.1.4',
         ];
+    }
+
+    protected static function updateComposer($key, $callback)
+    {
+        if (! file_exists(base_path('composer.json'))) {
+            return;
+        }
+
+        $config = json_decode(file_get_contents(base_path('composer.json')), true);
+        $config[$key] = $callback(
+            Arr::exists($config, $key) ? $config[$key] : []
+        );
+
+        ksort($config[$key]);
+
+        (new Filesystem)->put(
+            base_path('composer.json'),
+            json_encode($config, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT).PHP_EOL
+        );
     }
 
     protected static function getStubPath($path)
