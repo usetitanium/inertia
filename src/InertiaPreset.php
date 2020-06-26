@@ -2,8 +2,8 @@
 
 namespace Titanium\InertiaPreset;
 
-use Illuminate\Support\Arr;
 use Laravel\Ui\Presets\Preset;
+use Illuminate\Filesystem\Filesystem;
 
 class InertiaPreset extends Preset
 {
@@ -12,6 +12,7 @@ class InertiaPreset extends Preset
     {
         static::updatePackages();
         static::updatePackages(false);
+        static::updateGitIgnore();
     }
 
     protected static function updatePackageArray(array $packages, $key)
@@ -21,6 +22,17 @@ class InertiaPreset extends Preset
         }
 
         return static::updateDependenciesArray($packages);
+    }
+
+    protected static function updateGitIgnore()
+    {
+        (new Filesystem)->insertAfter(
+            '.gitignore', 
+            '/public/storage' . PHP_EOL,
+            collect(['/public/*.js', '/public/*.css', '/public/mix-manifest.json'])->map(function ($file) {
+                return $file . PHP_EOL;
+            })->join(''),
+        );
     }
 
     protected static function updateDevDependenciesArray($packages)
