@@ -16,6 +16,8 @@ class InertiaPresetServiceProvider extends ServiceProvider
         $this->registerMacros();
 
         UiCommand::macro('inertia', function ($command) {
+            $command->info('Scaffolding...');
+
             InertiaPreset::install();
 
             $command->info('Inertia scaffolding installed successfully.');

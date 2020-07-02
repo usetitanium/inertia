@@ -20,6 +20,7 @@ class InertiaPreset extends Preset
         static::updateStyles();
         static::addWebpackAlias();
         static::updateViews();
+        static::addScripts();
     }
 
     protected static function updateComposerDependcies()
@@ -97,6 +98,11 @@ class InertiaPreset extends Preset
                 $filesystem->get(static::getStubPath('views/app.blade.php.stub'))
             );
         });
+    }
+
+    protected static function addScripts()
+    {
+        (new Filesystem)->copyDirectory(__DIR__ . '/stubs/js', resource_path('js'));
     }
 
     protected static function updateDevDependenciesArray($packages)
