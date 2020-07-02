@@ -22,6 +22,7 @@ class InertiaPreset extends Preset
         static::updateViews();
         static::addScripts();
         static::addControllers();
+        static::addRoutes();
     }
 
     protected static function updateComposerDependcies()
@@ -109,6 +110,11 @@ class InertiaPreset extends Preset
     protected static function addControllers()
     {
         (new Filesystem)->copyDirectory(__DIR__ . '/stubs/Controllers', app_path('Http/Controllers'));
+    }
+
+    protected static function addRoutes()
+    {
+        (new Filesystem)->copy(__DIR__ . '/stubs/routes.stub', base_path('routes') . '/web.php');
     }
 
     protected static function updateDevDependenciesArray($packages)
