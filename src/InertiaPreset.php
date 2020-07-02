@@ -23,6 +23,7 @@ class InertiaPreset extends Preset
         static::addScripts();
         static::addControllers();
         static::addRoutes();
+        static::addSharedData();
     }
 
     protected static function updateComposerDependcies()
@@ -114,7 +115,12 @@ class InertiaPreset extends Preset
 
     protected static function addRoutes()
     {
-        (new Filesystem)->copy(__DIR__ . '/stubs/routes.stub', base_path('routes') . '/web.php');
+        (new Filesystem)->copy(__DIR__ . '/stubs/routes.stub', base_path('routes/web.php'));
+    }
+
+    protected static function addSharedData()
+    {
+        (new Filesystem)->copy(__DIR__ . '/stubs/AppServiceProvider.stub', app_path('Providers/AppServiceProvider.php'));
     }
 
     protected static function updateDevDependenciesArray($packages)

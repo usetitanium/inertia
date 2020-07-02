@@ -56,7 +56,7 @@ class InertiaPresetServiceProvider extends ServiceProvider
             });
         });
 
-        Filesystem::macro('replaceSnippet', function ($file, $existing , $new) {
+        Filesystem::macro('replaceSnippet', function ($file, $existing, $new) {
             tap(new Filesystem, function ($filesystem) use ($file, $existing, $new) {
                 $contents = $filesystem->get($file);
 
