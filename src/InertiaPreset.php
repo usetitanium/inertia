@@ -12,9 +12,8 @@ class InertiaPreset extends Preset
 
     public static function install()
     {
-        static::removeNodeModules();
-        static::updatePackages();
-        static::updatePackages(false);
+        static::updateFrontendDependencies();
+        (new Filesystem)->removeNodeModules();
         static::updateComposerDependcies();
         static::updateGitIgnore();
         static::updateStyles();
@@ -24,6 +23,37 @@ class InertiaPreset extends Preset
         static::addControllers();
         static::addRoutes();
         static::addSharedData();
+    }
+
+    protected static function updateFrontendDependencies() {
+        tap(new Filesystem, function ($filesystem) {
+            // Update Dependencies
+            $filesystem->updateJsonConfig(
+                base_path('package.json'),
+                'dependencies', 
+                function () {
+                    return [
+                        '@inertiajs/inertia' => '^0.1.9',
+                        '@inertiajs/inertia-vue' => '^0.1.4',
+                    ];
+                }
+            );
+
+            // Update dev dependencies
+            $filesystem->updateJsonConfig(
+                base_path('package.json'),
+                'devDependencies', 
+                function () {
+                    return [
+                        'cross-env' => '^7.0',
+                        'laravel-mix' => '^5.0.1',
+                        'resolve-url-loader' => '^2.3.1',
+                        'vue' => '^2.5.17',
+                        'vue-template-compiler' => '^2.6.10',
+                    ];
+                }
+            );
+        });
     }
 
     protected static function updateComposerDependcies()
@@ -38,15 +68,6 @@ class InertiaPreset extends Preset
                 ]
             );
         });
-    }
-
-    protected static function updatePackageArray(array $packages, $key)
-    {
-        if ($key === 'devDependencies') {
-            return static::updateDevDependenciesArray($packages);
-        }
-
-        return static::updateDependenciesArray($packages);
     }
 
     protected static function updateGitIgnore()
@@ -121,25 +142,6 @@ class InertiaPreset extends Preset
     protected static function addSharedData()
     {
         (new Filesystem)->copy(__DIR__ . '/stubs/AppServiceProvider.stub', app_path('Providers/AppServiceProvider.php'));
-    }
-
-    protected static function updateDevDependenciesArray($packages)
-    {
-        return [
-            'cross-env' => '^7.0',
-            'laravel-mix' => '^5.0.1',
-            'resolve-url-loader' => '^2.3.1',
-            'vue' => '^2.5.17',
-            'vue-template-compiler' => '^2.6.10',
-        ];
-    }
-
-    protected static function updateDependenciesArray($packages)
-    {
-        return [
-            '@inertiajs/inertia' => '^0.1.9',
-            '@inertiajs/inertia-vue' => '^0.1.4',
-        ];
     }
 
     protected static function updateComposer($key, $callback)

@@ -66,5 +66,34 @@ class InertiaPresetServiceProvider extends ServiceProvider
                 );
             });
         });
+
+        Filesystem::macro('removeNodeModules', function () {
+            tap(new Filesystem, function ($files) {
+                $files->deleteDirectory(base_path('node_modules'));
+
+                $files->delete(base_path('yarn.lock'));
+                $files->delete(base_path('package-lock.json'));
+            });
+        });
+
+        Filesystem::macro('updateJsonConfig', function ($file, $key, $callback) {
+            tap(new Filesystem, function ($filesystem) use ($file, $key, $callback) {
+                if (!$filesystem->exists($file)) {
+                    return;
+                }
+
+                $config = json_decode($filesystem->get($file), true);
+
+                $config[$key] = $callback(
+                    array_key_exists($key, $config) ? $config[$key] : null,
+                );
+
+                if (is_array($config[$key])) {
+                    ksort($config[$key]);
+                }
+                
+                $filesystem->put($file, json_encode($config, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT).PHP_EOL);
+            });
+        });
     }
 }
