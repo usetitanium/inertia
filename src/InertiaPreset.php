@@ -100,8 +100,8 @@ class InertiaPreset
     {
         $this->filesystem->replaceSnippet(
             base_path('webpack.mix.js'),
-            $this->filesystem->get($this->getStubPath('webpack/sass.stub')),
-            $this->filesystem->get($this->getStubPath('webpack/css.stub'))
+            $this->filesystem->get($this->getStubPath('shared/webpack/sass.stub')),
+            $this->filesystem->get($this->getStubPath('shared/webpack/css.stub'))
         );
 
         $this->filesystem->deleteDirectory(resource_path('sass'));
@@ -118,7 +118,7 @@ class InertiaPreset
         $this->filesystem->insertAfter(
            base_path('webpack.mix.js'),
             ".copy('resources/css/app.css', 'public/css')",
-            Str::of($this->filesystem->get($this->getStubPath('webpack/alias.stub')))
+            Str::of($this->filesystem->get($this->getStubPath('shared/webpack/alias.stub')))
                 ->start(PHP_EOL)
                 ->indent()
         );
@@ -129,28 +129,38 @@ class InertiaPreset
         $this->filesystem->cleanDirectory(resource_path('views'));
         $this->filesystem->put(
             resource_path('views/app.blade.php'),
-            $this->filesystem->get($this->getStubPath('views/app.blade.php.stub'))
+            $this->filesystem->get($this->getStubPath('shared/app.blade.stub'))
         );
     }
 
     protected function addScripts()
     {
-        $this->filesystem->copyDirectory($this->getStubPath('js'), resource_path('js'));
+        $path = $this->authentication ? 'auth/js' : 'non-auth/js';
+
+        $this->filesystem->copyDirectory($this->getStubPath($path), resource_path('js'));
     }
 
     protected function addControllers()
     {
-        $this->filesystem->copyDirectory($this->getStubPath('Controllers'), app_path('Http/Controllers'));
+        if (!$this->authentication) {
+            return;
+        }
+
+        $this->filesystem->copyDirectory($this->getStubPath('auth/Controllers'), app_path('Http/Controllers'));
     }
 
     protected function addRoutes()
     {
-        $this->filesystem->copy($this->getStubPath('routes.stub'), base_path('routes/web.php'));
+        $path = $this->authentication ? 'auth/routes.stub': 'non-auth/routes.stub';
+
+        $this->filesystem->copy($this->getStubPath($path), base_path('routes/web.php'));
     }
 
     protected function addSharedData()
     {
-        $this->filesystem->copy($this->getStubPath('AppServiceProvider.stub'), app_path('Providers/AppServiceProvider.php'));
+        $path = $this->authentication ? 'auth/AppServiceProvider.stub': 'non-auth/AppServiceProvider.stub';
+
+        $this->filesystem->copy($this->getStubPath($path), app_path('Providers/AppServiceProvider.php'));
     }
 
     protected function getStubPath($path)

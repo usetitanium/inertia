@@ -28,7 +28,7 @@
             Your email has been verified.
         </p>
 
-        <p v-if="$page.session.verified">
+        <p v-if="$page.session.message">
             {{ $page.session.message }}
         </p>
 
