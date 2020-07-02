@@ -7,72 +7,87 @@ use Illuminate\Support\Str;
 use Laravel\Ui\Presets\Preset;
 use Illuminate\Filesystem\Filesystem;
 
-class InertiaPreset extends Preset
+class InertiaPreset
 {
+    protected $authentication;
+    protected $filesystem;
 
-    public static function install()
+    public function __construct($authentication)
     {
-        static::updateFrontendDependencies();
-        (new Filesystem)->removeNodeModules();
-        static::updateComposerDependcies();
-        static::updateGitIgnore();
-        static::updateStyles();
-        static::addWebpackAlias();
-        static::updateViews();
-        static::addScripts();
-        static::addControllers();
-        static::addRoutes();
-        static::addSharedData();
+        $this->authentication = $authentication;
+        $this->filesystem = new Filesystem;
     }
 
-    protected static function updateFrontendDependencies() {
-        tap(new Filesystem, function ($filesystem) {
-            // Update Dependencies
-            $filesystem->updateJsonConfig(
-                base_path('package.json'),
-                'dependencies', 
-                function () {
-                    return [
-                        '@inertiajs/inertia' => '^0.1.9',
-                        '@inertiajs/inertia-vue' => '^0.1.4',
-                    ];
-                }
-            );
-
-            // Update dev dependencies
-            $filesystem->updateJsonConfig(
-                base_path('package.json'),
-                'devDependencies', 
-                function () {
-                    return [
-                        'cross-env' => '^7.0',
-                        'laravel-mix' => '^5.0.1',
-                        'resolve-url-loader' => '^2.3.1',
-                        'vue' => '^2.5.17',
-                        'vue-template-compiler' => '^2.6.10',
-                    ];
-                }
-            );
-        });
+    public function install()
+    {
+        $this->updateFrontendDependencies();
+        $this->removeNodeModules();
+        $this->updateComposerDependcies();
+        $this->updateGitIgnore();
+        $this->updateStyles();
+        $this->addWebpackAlias();
+        $this->updateViews();
+        $this->addScripts();
+        $this->addControllers();
+        $this->addRoutes();
+        $this->addSharedData();
     }
 
-    protected static function updateComposerDependcies()
-    {
-        static::updateComposer('require', function ($packages) {
-            return array_merge(
-                $packages,
-                [
-                    'inertiajs/inertia-laravel' => '^0.2.5',
-                    'tightenco/ziggy' => '^0.9.4',
-                    'laravel/ui' => '^2.0',
-                ]
-            );
-        });
+    protected function updateFrontendDependencies() {
+        // Update Dependencies
+        $this->filesystem->updateJsonConfig(
+            base_path('package.json'),
+            'dependencies', 
+            function () {
+                return [
+                    '@inertiajs/inertia' => '^0.1.9',
+                    '@inertiajs/inertia-vue' => '^0.1.4',
+                ];
+            }
+        );
+
+        // Update dev dependencies
+        $this->filesystem->updateJsonConfig(
+            base_path('package.json'),
+            'devDependencies', 
+            function () {
+                return [
+                    'cross-env' => '^7.0',
+                    'laravel-mix' => '^5.0.1',
+                    'resolve-url-loader' => '^2.3.1',
+                    'vue' => '^2.5.17',
+                    'vue-template-compiler' => '^2.6.10',
+                ];
+            }
+        );
     }
 
-    protected static function updateGitIgnore()
+    protected function removeNodeModules()
     {
-        (new Filesystem)->insertAfter(
+        $this->filesystem->removeNodeModules();
+    }
+
+    protected function updateComposerDependcies()
+    {
+        $this->filesystem->updateJsonConfig(
+            base_path('composer.json'),
+            'require',
+            function ($packages = []) {
+                return array_merge(
+                    $packages,
+                    [
+                        'inertiajs/inertia-laravel' => '^0.2.5',
+                        'tightenco/ziggy' => '^0.9.4',
+                        'laravel/ui' => '^2.0',
+                    ]
+                );
+            }
+        );
+    }
+
+    protected function updateGitIgnore()
+    {
+        $this->filesystem->insertAfter(
             base_path('.gitignore'),
             Str::of('/public/storage')->finish(PHP_EOL),
             collect(['/public/*.js', '/public/*.css', '/public/mix-manifest.json', '.DS_Store'])->map(function ($file) {
@@ -81,89 +96,64 @@ class InertiaPreset extends Preset
         );
     }
 
-    protected static function updateStyles()
+    protected function updateStyles()
     {
-        tap(new Filesystem, function ($filesystem) {
-            $filesystem->replaceSnippet(
-                base_path('webpack.mix.js'),
-                $filesystem->get(static::getStubPath('webpack/sass.stub')),
-                $filesystem->get(static::getStubPath('webpack/css.stub'))
-            );
+        $this->filesystem->replaceSnippet(
+            base_path('webpack.mix.js'),
+            $this->filesystem->get($this->getStubPath('webpack/sass.stub')),
+            $this->filesystem->get($this->getStubPath('webpack/css.stub'))
+        );
 
-            $filesystem->deleteDirectory(resource_path('sass'));
+        $this->filesystem->deleteDirectory(resource_path('sass'));
 
-            if (!$filesystem->exists(resource_path('css'))) {
-                $filesystem->makeDirectory(resource_path('css'));
-            }
-
-            $filesystem->put(resource_path('css/app.css'), '');
-        });
-    }
-
-    protected static function addWebpackAlias()
-    {
-        tap(new Filesystem, function ($filesystem) {
-            $filesystem->insertAfter(
-               base_path('webpack.mix.js'),
-                ".copy('resources/css/app.css', 'public/css')",
-                Str::of($filesystem->get(static::getStubPath('webpack/alias.stub')))
-                    ->start(PHP_EOL)
-                    ->indent()
-            );
-        });
-    }
-
-    protected static function updateViews()
-    {
-        tap(new Filesystem, function ($filesystem) {
-            $filesystem->cleanDirectory(resource_path('views'));
-            $filesystem->put(
-                resource_path('views/app.blade.php'),
-                $filesystem->get(static::getStubPath('views/app.blade.php.stub'))
-            );
-        });
-    }
-
-    protected static function addScripts()
-    {
-        (new Filesystem)->copyDirectory(__DIR__ . '/stubs/js', resource_path('js'));
-    }
-
-    protected static function addControllers()
-    {
-        (new Filesystem)->copyDirectory(__DIR__ . '/stubs/Controllers', app_path('Http/Controllers'));
-    }
-
-    protected static function addRoutes()
-    {
-        (new Filesystem)->copy(__DIR__ . '/stubs/routes.stub', base_path('routes/web.php'));
-    }
-
-    protected static function addSharedData()
-    {
-        (new Filesystem)->copy(__DIR__ . '/stubs/AppServiceProvider.stub', app_path('Providers/AppServiceProvider.php'));
-    }
-
-    protected static function updateComposer($key, $callback)
-    {
-        if (! file_exists(base_path('composer.json'))) {
-            return;
+        if (!$this->filesystem->exists(resource_path('css'))) {
+            $this->filesystem->makeDirectory(resource_path('css'));
         }
 
-        $config = json_decode(file_get_contents(base_path('composer.json')), true);
-        $config[$key] = $callback(
-            Arr::exists($config, $key) ? $config[$key] : []
-        );
+        $this->filesystem->put(resource_path('css/app.css'), '');
+    }
 
-        ksort($config[$key]);
-
-        (new Filesystem)->put(
-            base_path('composer.json'),
-            json_encode($config, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT).PHP_EOL
+    protected function addWebpackAlias()
+    {
+        $this->filesystem->insertAfter(
+           base_path('webpack.mix.js'),
+            ".copy('resources/css/app.css', 'public/css')",
+            Str::of($this->filesystem->get($this->getStubPath('webpack/alias.stub')))
+                ->start(PHP_EOL)
+                ->indent()
         );
     }
 
-    protected static function getStubPath($path)
+    protected function updateViews()
+    {
+        $this->filesystem->cleanDirectory(resource_path('views'));
+        $this->filesystem->put(
+            resource_path('views/app.blade.php'),
+            $this->filesystem->get($this->getStubPath('views/app.blade.php.stub'))
+        );
+    }
+
+    protected function addScripts()
+    {
+        $this->filesystem->copyDirectory($this->getStubPath('js'), resource_path('js'));
+    }
+
+    protected function addControllers()
+    {
+        $this->filesystem->copyDirectory($this->getStubPath('Controllers'), app_path('Http/Controllers'));
+    }
+
+    protected function addRoutes()
+    {
+        $this->filesystem->copy($this->getStubPath('routes.stub'), base_path('routes/web.php'));
+    }
+
+    protected function addSharedData()
+    {
+        $this->filesystem->copy($this->getStubPath('AppServiceProvider.stub'), app_path('Providers/AppServiceProvider.php'));
+    }
+
+    protected function getStubPath($path)
     {
         return __DIR__ . '/stubs/' . $path;
     }
