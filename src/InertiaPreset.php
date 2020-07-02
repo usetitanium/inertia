@@ -21,6 +21,7 @@ class InertiaPreset extends Preset
         static::addWebpackAlias();
         static::updateViews();
         static::addScripts();
+        static::addControllers();
     }
 
     protected static function updateComposerDependcies()
@@ -51,7 +52,7 @@ class InertiaPreset extends Preset
         (new Filesystem)->insertAfter(
             base_path('.gitignore'),
             Str::of('/public/storage')->finish(PHP_EOL),
-            collect(['/public/*.js', '/public/*.css', '/public/mix-manifest.json'])->map(function ($file) {
+            collect(['/public/*.js', '/public/*.css', '/public/mix-manifest.json', '.DS_Store'])->map(function ($file) {
                 return Str::of($file)->finish(PHP_EOL)->get();
             })->join(''),
         );
@@ -103,6 +104,11 @@ class InertiaPreset extends Preset
     protected static function addScripts()
     {
         (new Filesystem)->copyDirectory(__DIR__ . '/stubs/js', resource_path('js'));
+    }
+
+    protected static function addControllers()
+    {
+        (new Filesystem)->copyDirectory(__DIR__ . '/stubs/Controllers', app_path('Http/Controllers'));
     }
 
     protected static function updateDevDependenciesArray($packages)
