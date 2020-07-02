@@ -1,7 +1,7 @@
 <template>
     <div>
         <header>
-            <InertiaLink :href="route('home')">
+            <InertiaLink href="/">
                 {{ $page.app.name }}
             </InertiaLink>
         </header>
