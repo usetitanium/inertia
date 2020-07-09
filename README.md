@@ -4,8 +4,17 @@ A Laravel frontend preset for [inertiajs](https://inertiajs.com/) and [Vue](http
 
 ## Installation
 
-N/A
+```
+composer require inertiajs/inertia-laravel tightenco/ziggy laravel/ui usetitanium/inertia
+php artisan ui inertia
+npm install
+npm run dev
+```
 
 ## Options
 
-N/A
+### Auth
+
+```
+php artisan ui inertia --auth
+```
