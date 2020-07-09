@@ -22,7 +22,6 @@ class InertiaPreset
     {
         $this->updateFrontendDependencies();
         $this->removeNodeModules();
-        $this->updateComposerDependcies();
         $this->updateGitIgnore();
         $this->updateStyles();
         $this->addWebpackAlias();
@@ -65,24 +64,6 @@ class InertiaPreset
     protected function removeNodeModules()
     {
         $this->filesystem->removeNodeModules();
-    }
-
-    protected function updateComposerDependcies()
-    {
-        $this->filesystem->updateJsonConfig(
-            base_path('composer.json'),
-            'require',
-            function ($packages = []) {
-                return array_merge(
-                    $packages,
-                    [
-                        'inertiajs/inertia-laravel' => '^0.2.5',
-                        'tightenco/ziggy' => '^0.9.4',
-                        'laravel/ui' => '^2.0',
-                    ]
-                );
-            }
-        );
     }
 
     protected function updateGitIgnore()
