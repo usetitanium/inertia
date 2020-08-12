@@ -11,11 +11,14 @@ class InertiaPreset
 {
     protected $authentication;
     protected $filesystem;
+    protected $adapter;
 
-    public function __construct($authentication)
+    public function __construct($authentication, $adapter)
     {
-        $this->authentication = $authentication;
         $this->filesystem = new Filesystem;
+
+        $this->authentication = $authentication;
+        $this->adapter = $adapter;
     }
 
     public function install()

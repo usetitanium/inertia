@@ -11,6 +11,8 @@ use Titanium\InertiaPreset\InertiaPreset;
 
 class InertiaPresetServiceProvider extends ServiceProvider
 {
+    protected $adapters = ['vue', 'react'];
+
     public function boot()
     {
         $this->registerMacros();
@@ -18,7 +20,16 @@ class InertiaPresetServiceProvider extends ServiceProvider
         UiCommand::macro('inertia', function ($command) {
             $command->info('Scaffolding...');
 
-            (new InertiaPreset($command->option('auth')))->install();
+            if (
+                ! $adapter = collect($command->option('option'))->intersect($this->adapters)->first()
+            ) {
+                return $command->error('Please provide a valid Inertia adapter (vue, react)');
+            }
+
+            (new InertiaPreset(
+                $command->option('auth'),
+                $adapter
+            ))->install();
 
             $command->info('Inertia scaffolding installed successfully.');
             $command->comment('Run "npm install && npm run dev" to compile your assets.');
