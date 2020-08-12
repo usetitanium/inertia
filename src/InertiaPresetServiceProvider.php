@@ -26,10 +26,10 @@ class InertiaPresetServiceProvider extends ServiceProvider
                 return $command->error('Please provide a valid Inertia adapter (vue, react)');
             }
 
-            (new InertiaPreset(
+            (new InertiaPreset)->install(
                 $command->option('auth'),
-                $adapter
-            ))->install();
+                $adapter,
+            );
 
             $command->info('Inertia scaffolding installed successfully.');
             $command->comment('Run "npm install && npm run dev" to compile your assets.');
