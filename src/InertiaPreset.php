@@ -4,6 +4,7 @@ namespace Titanium\InertiaPreset;
 
 use Laravel\Ui\Presets\Preset;
 use Titanium\InertiaPreset\Presets\Vue;
+use Titanium\InertiaPreset\Presets\React;
 use Titanium\InertiaPreset\Presets\Laravel;
 
 class InertiaPreset
@@ -21,6 +22,10 @@ class InertiaPreset
 
     protected function vue($authentication) {
         (new Vue)->install($authentication);
+    }
+
+    protected function react($authentication) {
+        (new React)->install($authentication);
     }
 
 }

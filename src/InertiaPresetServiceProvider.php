@@ -42,6 +42,17 @@ class InertiaPresetServiceProvider extends ServiceProvider
             return $this->value;
         });
 
+        Stringable::macro('insert', function ($place, $insertion) {
+            if (Str::contains($this->value, $insertion)) {
+                return $this;
+            }
+            // dd(Str::afterLast($this->value, $place));
+
+            $this->value = Str::beforeLast($this->value, $place) . $place . $insertion . Str::afterLast($this->value, $place);
+
+            return $this;
+        });
+
         Stringable::macro('indent', function ($spaces = 4) {
             $this->value = collect(Str::of($this->value)->explode(PHP_EOL))
                 ->map(function ($string) use ($spaces) {
