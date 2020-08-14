@@ -83,7 +83,7 @@ class Vue extends Preset {
 
     protected function addScripts($authentication)
     {
-        $path = $authentication ? 'auth/js' : 'non-auth/js';
+        $path = $authentication ? 'auth/vue' : 'non-auth/vue';
 
         $this->filesystem->copyDirectory($this->getStubPath($path), resource_path('js'));
     }

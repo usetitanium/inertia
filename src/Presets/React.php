@@ -13,7 +13,7 @@ class React extends Preset {
         $this->updateWebpackConfig();
         $this->updateGitIgnore();
         $this->updateStyles();
-        // $this->addScripts($authentication);
+        $this->addScripts($authentication);
     }
 
     protected function updateDependencies()
@@ -36,10 +36,10 @@ class React extends Preset {
             'devDependencies', 
             function () {
                 return [
-                    '@babel/preset-react': '^7.0.0',
+                    '@babel/preset-react' => '^7.0.0',
                     'cross-env' => '^7.0',
-                    'react': '^16.2.0',
-                    'react-dom': '^16.2.0',
+                    'react' => '^16.2.0',
+                    'react-dom' => '^16.2.0',
                     'laravel-mix' => '^5.0.1',
                     'resolve-url-loader' => '^2.3.1',
                 ];
@@ -103,11 +103,11 @@ class React extends Preset {
         $this->filesystem->put(resource_path('css/app.css'), '');
     }
 
-    // protected function addScripts($authentication)
-    // {
-    //     $path = $authentication ? 'auth/js' : 'non-auth/js';
+    protected function addScripts($authentication)
+    {
+        $path = $authentication ? 'auth/react' : 'non-auth/react';
 
-    //     $this->filesystem->copyDirectory($this->getStubPath($path), resource_path('js'));
-    // }
+        $this->filesystem->copyDirectory($this->getStubPath($path), resource_path('js'));
+    }
 
 }
