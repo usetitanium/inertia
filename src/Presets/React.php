@@ -8,8 +8,8 @@ use Titanium\InertiaPreset\Presets\Preset;
 class React extends Preset {
 
     public function install($authentication) {
-        // $this->updateDependencies();
-        // $this->removeNodeModules();
+        $this->updateDependencies();
+        $this->removeNodeModules();
         $this->updateWebpackConfig();
         // $this->updateGitIgnore();
         // $this->updateStyles();
@@ -17,40 +17,41 @@ class React extends Preset {
         // $this->addWebpackAlias();
     }
 
-    // protected function updateDependencies()
-    // {
-    //     // Update Dependencies
-    //     $this->filesystem->updateJsonConfig(
-    //         base_path('package.json'),
-    //         'dependencies', 
-    //         function () {
-    //             return [
-    //                 '@inertiajs/inertia' => '^0.1.9',
-    //                 '@inertiajs/inertia-vue' => '^0.1.4',
-    //             ];
-    //         }
-    //     );
+    protected function updateDependencies()
+    {
+        // Update Dependencies
+        $this->filesystem->updateJsonConfig(
+            base_path('package.json'),
+            'dependencies', 
+            function () {
+                return [
+                    '@inertiajs/inertia' => '^0.1',
+                    '@inertiajs/inertia-react' => '^0.1',
+                ];
+            }
+        );
 
-    //     // Update dev dependencies
-    //     $this->filesystem->updateJsonConfig(
-    //         base_path('package.json'),
-    //         'devDependencies', 
-    //         function () {
-    //             return [
-    //                 'cross-env' => '^7.0',
-    //                 'laravel-mix' => '^5.0.1',
-    //                 'resolve-url-loader' => '^2.3.1',
-    //                 'vue' => '^2.5.17',
-    //                 'vue-template-compiler' => '^2.6.10',
-    //             ];
-    //         }
-    //     );
-    // }
+        // Update dev dependencies
+        $this->filesystem->updateJsonConfig(
+            base_path('package.json'),
+            'devDependencies', 
+            function () {
+                return [
+                    '@babel/preset-react': '^7.0.0',
+                    'cross-env' => '^7.0',
+                    'react': '^16.2.0',
+                    'react-dom': '^16.2.0',
+                    'laravel-mix' => '^5.0.1',
+                    'resolve-url-loader' => '^2.3.1',
+                ];
+            }
+        );
+    }
 
-    // protected function removeNodeModules()
-    // {
-    //     $this->filesystem->removeNodeModules();
-    // }
+    protected function removeNodeModules()
+    {
+        $this->filesystem->removeNodeModules();
+    }
 
     protected function updateWebpackConfig()
     {
