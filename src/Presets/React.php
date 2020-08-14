@@ -11,10 +11,9 @@ class React extends Preset {
         $this->updateDependencies();
         $this->removeNodeModules();
         $this->updateWebpackConfig();
-        // $this->updateGitIgnore();
-        // $this->updateStyles();
+        $this->updateGitIgnore();
+        $this->updateStyles();
         // $this->addScripts($authentication);
-        // $this->addWebpackAlias();
     }
 
     protected function updateDependencies()
@@ -80,48 +79,35 @@ class React extends Preset {
         );
     }
 
-    // protected function updateGitIgnore()
-    // {
-    //     $contents = $this->filesystem->get(base_path('.gitignore'));
+    protected function updateGitIgnore()
+    {
+        $contents = $this->filesystem->get(base_path('.gitignore'));
 
-    //     $inserts = collect(['/public/*.js', '/public/*.css', '/public/mix-manifest.json', '.DS_Store'])->map(function ($file) {
-    //         return Str::of($file)->finish(PHP_EOL)->get();
-    //     })->join('');
+        $inserts = collect(['/public/*.js', '/public/*.css', '/public/mix-manifest.json', '.DS_Store'])->map(function ($file) {
+            return Str::of($file)->finish(PHP_EOL)->get();
+        })->join('');
         
-    //     $result = Str::of($contents)->finish($inserts)->get();
+        $result = Str::of($contents)->finish($inserts)->get();
         
-    //     $this->filesystem->put(base_path('.gitignore'), $result);
-    // }
+        $this->filesystem->put(base_path('.gitignore'), $result);
+    }
 
-    // protected function updateStyles()
-    // {
+    protected function updateStyles()
+    {
+        $this->filesystem->deleteDirectory(resource_path('sass'));
 
+        if (!$this->filesystem->exists(resource_path('css'))) {
+            $this->filesystem->makeDirectory(resource_path('css'));
+        }
 
-    //     $this->filesystem->deleteDirectory(resource_path('sass'));
-
-    //     if (!$this->filesystem->exists(resource_path('css'))) {
-    //         $this->filesystem->makeDirectory(resource_path('css'));
-    //     }
-
-    //     $this->filesystem->put(resource_path('css/app.css'), '');
-    // }
+        $this->filesystem->put(resource_path('css/app.css'), '');
+    }
 
     // protected function addScripts($authentication)
     // {
     //     $path = $authentication ? 'auth/js' : 'non-auth/js';
 
     //     $this->filesystem->copyDirectory($this->getStubPath($path), resource_path('js'));
-    // }
-
-    // protected function addWebpackAlias()
-    // {
-    //     $this->filesystem->insertAfter(
-    //        base_path('webpack.mix.js'),
-    //         ".copy('resources/css/app.css', 'public/css')",
-    //         Str::of($this->filesystem->get($this->getStubPath('shared/webpack/alias.stub')))
-    //             ->start(PHP_EOL)
-    //             ->indent()
-    //     );
     // }
 
 }
