@@ -46,7 +46,6 @@ class InertiaPresetServiceProvider extends ServiceProvider
             if (Str::contains($this->value, $insertion)) {
                 return $this;
             }
-            // dd(Str::afterLast($this->value, $place));
 
             $this->value = Str::beforeLast($this->value, $place) . $place . $insertion . Str::afterLast($this->value, $place);
 
