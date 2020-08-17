@@ -18,9 +18,7 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 });
 
-Auth::routes([
-    'verify' => true
-]);
+Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
