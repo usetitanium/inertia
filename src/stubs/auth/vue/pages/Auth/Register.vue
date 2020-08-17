@@ -74,7 +74,7 @@
 
         methods: {
             submit() {
-                this.$inertia.post('/register', this.form)
+                this.$inertia.post(this.route('register'), this.form)
             },
         },
     }

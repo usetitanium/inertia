@@ -7,6 +7,7 @@
             :autofocus="autofocus"
             :value="value"
             @input="$emit('input', $event.target.value)"
+            v-bind="$attrs"
         />
         <span v-for="error in errors">{{ error }}</span>
     </div>
